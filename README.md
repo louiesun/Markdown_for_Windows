@@ -1,25 +1,43 @@
-# aardio-webview2-template
+# vditor for windows
 
-aardio webview2 + vue3
+Based on [aardio](www.aardio.com).
 
-## dev
++ Development
 
-```bash
+```text
 cd web.src
-pnpm install
-pnpm dev
 
-# 然后用 aardio 打开工程
-# 运行
+pnpm install
+
+pnpm run dev
+
+cd ..
+
+start default.aproj && F5
 ```
 
-## build
-
-```bash
+```text
 cd web.src
-pnpm install
-pnpm build
 
-# 然后用 aardio 打开工程
-# 发布
+pnpm run build
+
+cd ..
+
+start default.aproj && F7
 ```
+
+## Features
+
+Supports:
+
++ open file
++ save file
++ save file as
++ export to html
++ open file with command(`start "" Editor.exe {{ File Path }}`)
++ simply set up with command (`start "" Editor.exe SETUP`)
+
+## todo
+
+Better shell open, now using `Sleep(1000)` to  wait for the vditor's beging ready. 
+
