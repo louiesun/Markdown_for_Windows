@@ -1,0 +1,117 @@
+import win.ui;
+/*DSG{{*/
+mainForm = win.form(text="MarkdownEditor";right=759;bottom=469)
+mainForm.add()
+/*}}*/
+
+import io;
+
+function Setregdit()
+{
+	var pth=io._exepath;
+	import win.reg;
+	var sh=win.reg("HKEY_CLASSES_ROOT\WinVditor.Markdown\shell\open\command");
+	var ic=win.reg("HKEY_CLASSES_ROOT\WinVditor.Markdown\DefaultIcon");
+	var dop=win.reg("HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.md\OpenWithProgids");
+	
+	dop.setBinValue("WinVditor.Markdown","");
+	
+	var opShell='"'+pth+'" "%1"';
+	var Defcon=pth+',0';
+	sh.setSzValue("",opShell);
+	ic.setSzValue("",Defcon);
+	win.msgbox("Please then lauch a md file and lauch me as your user choice. ","SETUP");
+}
+
+if(#_ARGV>0&&_ARGV[1]=='SETUP') Setregdit();
+
+
+//如果运行或发布遇到问题，请先卸载 WebView2 再运行示例以更新该组件。
+import web.view;
+var theView  = web.view(mainForm); 
+ 
+var FilePath='NULL';
+
+import fsys.dlg;
+import fsys.file;
+
+
+function ReadFile(FilePath)
+{
+	if(!io.exist(FilePath)) return '';
+	var File=fsys.file(FilePath);
+	var Ans=File.readAll();
+	File.close();
+	return Ans;
+}
+
+function WriteFile(FilePath,FileText)
+{
+	var File=fsys.file(FilePath,"w");
+	File.write(FileText);
+	File.close();
+	return FilePath;
+}
+// 导出为Javascript中的 aardio 对象
+theView.external = {
+	InitFile = function()
+	{
+		sleep(1000);// wait for the vditor's preparation
+		if(#_ARGV>1)
+			win.msgboxErr("The command is more than 2, And only the First file will be open... ","Notice!!");
+		if(#_ARGV>0&&_ARGV[1]!='SETUP')
+		{
+			FilePath=_ARGV[1];
+			mainForm.text=FilePath;
+			return ReadFile(FilePath);
+		}
+		return null;
+	}
+	CloseFile = function() {
+		FilePath='NULL';
+	}
+    OpenFile = function(Url){
+        if(Url==null) FilePath=fsys.dlg.open("Markdown(*.md)|*.md|","打开文件",NULL,NULL);
+        else FilePath=Url;
+        if(FilePath==null||FilePath=='NULL') return false;
+        mainForm.text=FilePath;
+        return ReadFile(FilePath);
+    }; 
+    SaveFile = function(FileText){
+        if(FilePath==null||FilePath=='NULL')
+        {
+            win.msgboxErr("File not Exists. Please try save as. ","FNE");
+        	return false;
+        }
+        return WriteFile(FilePath,FileText);
+    };
+    SaveAsFile = function()
+    {
+        FilePath=fsys.dlg.saveOp("Markdown(*.md)|*.md|","文件另存为",null,null,"Markdown");
+        if(FilePath==null||FilePath=='NULL') return false;
+        mainForm.text=FilePath;
+        return FilePath;
+    }
+    SaveAsHTML = function(HTMLText)
+    {
+        var HTMLPath=fsys.dlg.saveOp("HTML(*.html)|*.html|","文件另存为",null,null,"HTMLExport");
+        if(HTMLPath==null|| HTMLPath=='NULL') return false;
+		WriteFile(HTMLPath,HTMLText);
+        return HTMLPath;
+    }
+}
+ 
+import wsock.tcp.simpleHttpServer; 
+
+var url;
+if (_STUDIO_INVOKED) {
+	import web.rest.client;
+	url = "http://localhost:3000/"
+} else {
+	url = "/web/index.html"
+}
+theView.go(url)
+
+mainForm.show();
+
+win.loopMessage();
