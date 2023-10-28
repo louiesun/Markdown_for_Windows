@@ -16,6 +16,8 @@ cd ..
 start default.aproj && F5
 ```
 
++ Build
+
 ```text
 cd web.src
 
