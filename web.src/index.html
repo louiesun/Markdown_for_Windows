@@ -1,13 +1,93 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" href="/favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href="/desmos.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite App</title>
+    <!-- <link rel="stylesheet" type="text/css" href="/3D.css"> -->
+    <script src="/calculator.js"></script>
+	<script src="/geometry.js"></script>
+    <!-- <script src="/3D.js"></script> -->
+    <title>Desmos</title>
   </head>
   <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
+    <!-- <div id="calculator" style="width: 600px; height: 400px;"></div> -->
+    <div id="calculator" style="border: 0; padding: 0; margin: 0; position: absolute; width: 98%; height: 98%;"></div>
+    <script>
+      var elt=document.getElementById('calculator');
+      var calculator = Desmos.GraphingCalculator(elt);   
+	  
+	  function SwitchCalculator(Param)
+	  {
+		if(Param=="Function")
+		{
+			calculator.destroy();
+			calculator = Desmos.GraphingCalculator(elt);
+			return Param;
+		}
+		else if(Param=="Geometry")
+		{
+			calculator.destroy();
+			calculator = Desmos.Geometry(elt);
+			return Param;
+		}
+		else
+			return -1;
+	  }
+    </script>
+	
+	
+	
+    <script>
+      function ReadFile(FileText)
+      {
+        calculator.setState(FileText);
+		return true;
+      }
+      function GetFile()
+      {
+          var ans=calculator.getState();
+          return ans;
+      }
+      function CloseFile()
+      {
+          return calculator.setBlank();
+      }
+      function ExportPNG()
+      {
+        var image = calculator.screenshot({
+        width: remote.width,
+        height: remote.height,
+        targetPixelRatio: 2
+        });
+    
+        var image_data = image.replace(/^data:image\/png;base64,/, "");
+
+        return image_data;
+      }
+	/*window.addEventListener("keydown", function(e) 
+	{
+        if((e.key=='s'||e.key=='S')&&(navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)){
+            e.preventDefault();
+            aardio.SaveFilet();
+        }
+		else if((e.key=='r'||e.key=='R')&&(navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)){
+			alert("You haven't save!!!");
+        }
+		else if((e.key=='w'||e.key=='W')&&(navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)){
+            e.preventDefault();
+            aardio.CloseFilet();
+        }
+		else if((e.key=='o'||e.key=='O')&&(navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)){
+            e.preventDefault();
+            aardio.OpenFilet();
+        }
+    }, false);*/
+</script>
+}
+
+}); 
+    </script>
+    
   </body>
 </html>

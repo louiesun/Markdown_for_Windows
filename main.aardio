@@ -1,7 +1,17 @@
 import win.ui;
+import win.ui.menu;
 /*DSG{{*/
-mainForm = win.form(text="MarkdownEditor";right=759;bottom=469)
-mainForm.add()
+mainForm = win.form(text="Desmos";right=723;bottom=469)
+mainForm.add(
+BTabout={cls="button";text="About";left=684;top=1;right=722;bottom=26;aw=1;z=6};
+BTclose={cls="button";text="CloseFile";left=196;top=1;right=249;bottom=26;aw=1;z=5};
+BTopen={cls="button";text="OpenFile";left=74;top=1;right=136;bottom=26;aw=1;z=2};
+BTsave={cls="button";text="SaveFile";left=248;top=1;right=619;bottom=26;aw=1;z=3};
+BTsaveas={cls="button";text="SaveFileAs";left=134;top=1;right=195;bottom=26;aw=1;z=4};
+DesForm={cls="custom";text="desmos";left=0;top=29;right=724;bottom=470;ah=1;aw=1;z=1};
+Exp={cls="button";text="ExportSVG";left=620;top=1;right=683;bottom=25;aw=1;z=8};
+Switch={cls="combobox";left=1;top=1;right=73;bottom=27;aw=1;edge=1;items={"Function";"Geometry"};mode="dropdown";z=7}
+)
 /*}}*/
 
 import io;
@@ -10,25 +20,36 @@ function Setregdit()
 {
 	var pth=io._exepath;
 	import win.reg;
-	var sh=win.reg("HKEY_CLASSES_ROOT\WinVditor.Markdown\shell\open\command");
-	var ic=win.reg("HKEY_CLASSES_ROOT\WinVditor.Markdown\DefaultIcon");
-	var dop=win.reg("HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.md\OpenWithProgids");
+	var sh=win.reg("HKEY_CLASSES_ROOT\Desmos\shell\open\command");
+	var ic=win.reg("HKEY_CLASSES_ROOT\Desmos\DefaultIcon");
+	var dop=win.reg("HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.des\OpenWithProgids");
 	
-	dop.setBinValue("WinVditor.Markdown","");
+	dop.setBinValue("Desmos","");
 	
-	var opShell='"'+pth+'" "%1"';
+	var opShell='"'+pth+'" "%1" FUNC';
 	var Defcon=pth+',0';
 	sh.setSzValue("",opShell);
 	ic.setSzValue("",Defcon);
-	win.msgbox("Please then lauch a md file and lauch me as your user choice. ","SETUP");
+	
+	import win.reg;
+	sh=win.reg("HKEY_CLASSES_ROOT\DesmosGeometry\shell\open\command");
+	ic=win.reg("HKEY_CLASSES_ROOT\DesmosGeometry\DefaultIcon");
+	dop=win.reg("HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.desgeo\OpenWithProgids");
+	
+	dop.setBinValue("DesmosGeometry","");
+	
+	opShell='"'+pth+'" "%1" GEOG';
+	Defcon=pth+',0';
+	sh.setSzValue("",opShell);
+	ic.setSzValue("",Defcon);
+	
+	win.msgbox("Please then lauch a des file and lauch me as your user choice. ","SETUP");
 }
 
 if(#_ARGV>0&&_ARGV[1]=='SETUP') Setregdit();
 
-
-//如果运行或发布遇到问题，请先卸载 WebView2 再运行示例以更新该组件。
 import web.view;
-var theView  = web.view(mainForm); 
+var theView  = web.view(mainForm.DesForm); 
  
 var FilePath='NULL';
 
@@ -47,70 +68,199 @@ function ReadFile(FilePath)
 
 function WriteFile(FilePath,FileText)
 {
+	//win.msgbox("right","write");
+	//win.msgbox(FileText,FilePath);
 	var File=fsys.file(FilePath,"w");
+	//var File=fsys.file(FilePath,"a");
 	File.write(FileText);
 	File.close();
 	return FilePath;
 }
-// 导出为Javascript中的 aardio 对象
-theView.external = {
-	InitFile = function()
-	{
-		sleep(1000);// wait for the vditor's preparation
-		if(#_ARGV>1)
-			win.msgboxErr("The command is more than 2, And only the First file will be open... ","Notice!!");
-		if(#_ARGV>0&&_ARGV[1]!='SETUP')
-		{
-			FilePath=_ARGV[1];
-			mainForm.text=FilePath;
-			return ReadFile(FilePath);
-		}
-		return null;
-	}
-	CloseFile = function() {
-		FilePath='NULL';
-	}
-    OpenFile = function(Url){
-        if(Url==null) FilePath=fsys.dlg.open("Markdown(*.md)|*.md|","打开文件",NULL,NULL);
-        else FilePath=Url;
-        if(FilePath==null||FilePath=='NULL') return false;
-        mainForm.text=FilePath;
-        return ReadFile(FilePath);
-    }; 
-    SaveFile = function(FileText){
-        if(FilePath==null||FilePath=='NULL')
-        {
-            win.msgboxErr("File not Exists. Please try save as. ","FNE");
-        	return false;
-        }
-        return WriteFile(FilePath,FileText);
-    };
-    SaveAsFile = function()
-    {
-        FilePath=fsys.dlg.saveOp("Markdown(*.md)|*.md|","文件另存为",null,null,"Markdown");
-        if(FilePath==null||FilePath=='NULL') return false;
-        mainForm.text=FilePath;
-        return FilePath;
-    }
-    SaveAsHTML = function(HTMLText)
-    {
-        var HTMLPath=fsys.dlg.saveOp("HTML(*.html)|*.html|","文件另存为",null,null,"HTMLExport");
-        if(HTMLPath==null|| HTMLPath=='NULL') return false;
-		WriteFile(HTMLPath,HTMLText);
-        return HTMLPath;
-    }
+
+function CloseFile()
+{
+	//win.msgbox("11");
+	FilePath=null;
+	mainForm.text="Desmos";
+	return theView.xcall("CloseFile");
 }
- 
+function OpenFile(Url)
+{
+	if(Url==null)
+	{
+		if(mainForm.Switch.selText=="Function")
+			FilePath=fsys.dlg.open("Desmos File(*.des)|*.des","OpenFile",null,null);
+		else if(mainForm.Switch.selText=="Geometry")
+		FilePath=fsys.dlg.open("Desmos File(*.desgeo)|*.desgeo","OpenFile",null,null);
+	}
+   	else FilePath=Url;
+   	if(FilePath==null||FilePath=='NULL') return false;
+   	mainForm.text=FilePath;
+	
+	var FileText=ReadFile(FilePath);
+	return theView.xcall('ReadFile',web.json.parse(FileText));
+}
+function SaveFile()
+{
+	//win.msgbox(FileText,FilePath);
+	if(FilePath==null||FilePath=='NULL')
+	{
+   		if(SaveAs()==false)
+   		{
+    	    win.msgboxErr("File Not Exists","ERROR: FNE");
+   	    	return false;
+   		}
+   	}
+   	var FileText=theView.xcall("GetFile");
+   	FileText=web.json.stringify(FileText)
+   	//win.msgbox(FileText,FilePath);
+   	return WriteFile(FilePath,FileText);
+}
+function SaveAs()
+{
+	if(mainForm.Switch.selText=="Function")
+		FilePath=fsys.dlg.saveOp("Desmos File(*.des)|*.des","Save File As",null,null,"DesmosFile");
+	else if(mainForm.Switch.selText=="Geometry")
+		FilePath=fsys.dlg.saveOp("Desmos File(*.desgeo)|*.desgeo","Save File As",null,null,"DesmosGeometryFile");
+    if(FilePath==null||FilePath=='NULL') return false;
+    mainForm.text=FilePath;
+    return FilePath;
+}
+
+//To be fix. 
+theView.external = {
+	CloseFilet = function()
+	{	
+		CloseFile();
+	}
+	OpenFilet = function(Url)
+	{
+		OpenFile();
+	}
+	SaveFilet=function()
+	{
+		SaveFile();
+	}	
+}
+
+import win.image;
+
+var hCulIcon = win.image.loadIconFromFile("/web/Function.ico",true)
+var hGeoIcon = win.image.loadIconFromFile("/web/Geometry.ico",true)
+
+function SwitchCalculator()
+{
+	CloseFile();
+	if(mainForm.Switch.selText=="Function")
+		::SendMessage(mainForm.hwnd,0x0080,null,hCulIcon);
+	else if(mainForm.Switch.selText=="Geometry")
+		::SendMessage(mainForm.hwnd,0x0080,null,hGeoIcon);
+	return theView.xcall("SwitchCalculator",mainForm.Switch.selText);
+}
+
+
 import wsock.tcp.simpleHttpServer; 
 
 var url;
 if (_STUDIO_INVOKED) {
 	import web.rest.client;
-	url = "http://localhost:3000/"
+	url = "http://localhost:5173/"
 } else {
 	url = "/web/index.html"
 }
+
 theView.go(url)
+
+/*
+
+	FilePath=fsys.dlg.saveOp("PNG File(*.png)|*.png","导出为png",null,null,"DesmosFile");
+    if(FilePath==null||FilePath=='NULL') return false;
+    mainForm.text=FilePath;
+    
+    var FileText=theView.xcall("ExportPNG");
+
+    win.msgboxTest(FileText,FilePath);
+    return WriteFile(FilePath,FileText);
+*/
+if(#_ARGV>0&&_ARGV[1]!='SETUP')
+{
+	sleep(1000);
+	if(_ARGV[2]=="GEOG")
+	{
+		mainForm.Switch.selText="Geometry";
+		SwitchCalculator();
+	}	
+	OpenFile(_ARGV[1]);
+}
+
+//import key;
+
+/*
+	mainForm.translateAccelerator = function( msg ){
+	var ctrl = key.getState("CTRL");
+    var shift =  key.getState("SHIFT");
+    var alt = key.getState("ALT");
+    if(msg.wParam == 'S'# && ctrl && !alt && !shift)
+    {
+       	return SaveFile();
+    }
+    else if(msg.wParam == 'O'# && ctrl && !alt && !shift)
+    {
+       	var rpl=OpenFile();
+		if(rpl==null) win.msgboxErr("Failed to open the file. ","ERR");
+		return rpl;
+    }
+    else if(msg.wParam == 'W'# && ctrl && !alt && !shift)
+    {
+       	return CloseFile();
+    }
+}
+*/
+
+import win.ui.accelerator;
+
+win.ui.accelerator({
+	{ ctrl = true; vkey = 's'#; oncommand = mainForm.BTsave.oncommand } 
+},winform);
+
+mainForm.BTopen.oncommand = function(id,event){
+	var rpl=OpenFile();
+	if(rpl==null) win.msgboxErr("Failed to open the file. ","ERR");
+	return rpl;
+}
+
+mainForm.BTsave.oncommand = function(id,event){
+	return SaveFile();
+}
+
+mainForm.BTsaveas.oncommand = function(id,event){
+	if(SaveAs()==false)
+    {
+        win.msgboxErr("File Not Exists","ERROR: FNE");
+        return false;
+    }
+    var FileText=theView.xcall("GetFile");
+    FileText=web.json.stringify(FileText)
+
+    return WriteFile(FilePath,FileText);
+}
+
+mainForm.BTclose.oncommand = function(id,event){
+	return CloseFile();
+}
+
+mainForm.BTabout.oncommand = function(id,event){
+	win.msgbox("Desmos Desktop with vite & aardio. \r\n Unfortunately, without any hot key... \r\n By louiesun with thanks to the Desmos Team. ","About");
+}
+
+mainForm.Switch.onListChange = function(id,event){
+	//win.msgbox(mainForm.Switch.text,"1");
+	return SwitchCalculator();
+}
+
+mainForm.Exp.oncommand = function(id,event){
+	win.msgboxErr("Available Soon!","TODO");
+}
 
 mainForm.show();
 
