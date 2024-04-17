@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<project ver="10" name="Vditor-Desktop" libEmbed="true" icon="lib\Function.ico" ui="win" output="Desmos.exe" CompanyName="louiesun" FileDescription="Windows Markdown Editor Based on Vditor. " LegalCopyright="Copyleft @louiesun 2022" ProductName="Desmos Desktop" InternalName="Desmos" FileVersion="0.0.0.11" ProductVersion="2.0.0.01" publishDir="/dist/" dstrip="false" local="false" ignored="false">
+<project ver="10" name="Vditor-Desktop" libEmbed="true" icon="web\Function.ico" ui="win" output="Desmos.exe" CompanyName="louiesun" FileDescription="Windows Markdown Editor Based on Vditor. " LegalCopyright="Copyleft @louiesun 2022" ProductName="Desmos Desktop" InternalName="Desmos" FileVersion="0.0.0.16" ProductVersion="3.0.0.01" publishDir="/dist/" dstrip="false" local="false" ignored="false">
 	<file name="main" path="main.aardio"/>
-	<folder name="窗体" path="forms" comment="" embed="true" local="false" ignored="false"/>
 	<folder name="网页" path="web" embed="true" comment="目录" local="true" ignored="false"/>
 	<folder name="网页源码" path="web.src" embed="false" comment="目录" local="false" ignored="true"/>
 </project>

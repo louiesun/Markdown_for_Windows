@@ -91,7 +91,7 @@ function OpenFile(Url)
 		if(mainForm.Switch.selText=="Function")
 			FilePath=fsys.dlg.open("Desmos File(*.des)|*.des","OpenFile",null,null);
 		else if(mainForm.Switch.selText=="Geometry")
-		FilePath=fsys.dlg.open("Desmos File(*.desgeo)|*.desgeo","OpenFile",null,null);
+			FilePath=fsys.dlg.open("Desmos File(*.desgeo)|*.desgeo","OpenFile",null,null);
 	}
    	else FilePath=Url;
    	if(FilePath==null||FilePath=='NULL') return false;
@@ -126,7 +126,12 @@ function SaveAs()
     mainForm.text=FilePath;
     return FilePath;
 }
-
+function ExportAsSvg()
+{
+	FilePath=fsys.dlg.saveOp("Svg File(*.desgeo)|*.svg","Save File As",null,null,"SVGFile");
+    if(FilePath==null||FilePath=='NULL') return false;
+    return FilePath;
+}
 //To be fix. 
 theView.external = {
 	CloseFilet = function()
@@ -141,6 +146,12 @@ theView.external = {
 	{
 		SaveFile();
 	}	
+	SaveSVG=function(SVGimg)
+	{
+		//win.msgbox(SVGimg,"svg");	
+		var SVGpath=ExportAsSvg();
+		return WriteFile(SVGpath,SVGimg);
+	}
 }
 
 import win.image;
@@ -258,8 +269,14 @@ mainForm.Switch.onListChange = function(id,event){
 	return SwitchCalculator();
 }
 
-mainForm.Exp.oncommand = function(id,event){
-	win.msgboxErr("Available Soon!","TODO");
+mainForm.Exp.oncommand = function(id,event){//We may need to improve the export functions to fit more kinds of file
+
+	//win.msgboxErr("Working... ","Fixing");
+	if(mainForm.Switch.selText=="Geometry")
+		win.msgboxErr("It seems like that the Desmos Team didn't support the Geometry mode's Exporting as SVG... ","ERROR");
+	else 
+		theView.invoke("ExportSVG");
+	return null;
 }
 
 mainForm.show();
