@@ -1,6 +1,6 @@
 # vditor for windows
 
-Based on [aardio](www.aardio.com).
+Based on [aardio](https://www.aardio.com).
 
 + Development
 
