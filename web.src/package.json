@@ -9,10 +9,10 @@
   },
   "dependencies": {
     "element-plus": "^2.4.1",
-    "vditor": "^3.9.6",
+    "vditor": "^3.11.1",
     "vue": "^3.2.25"
   },
-  "license":"GPL-3.0-or-later",
+  "license": "GPL-3.0-or-later",
   "devDependencies": {
     "@vitejs/plugin-vue": "^2.3.1",
     "unplugin-auto-import": "^0.16.7",
